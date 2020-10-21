@@ -1,0 +1,163 @@
+@model RecipeBook.Models.EditWrapper;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">   
+    <link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&family=Indie+Flower&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/EditRecipe.css" >
+    <style>
+        .RecipePicture{
+            height: 300px;
+            width: 300px;
+            border-radius: 10px;
+            border-style: solid;
+            border-color: black;
+            border-width: 5px;
+        }
+
+        .containerCenter{
+            position: relative;
+            text-align: center;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Courier, monospace;
+        }
+        .RecipeTitle{
+            font-weight: bold;
+        }
+
+        .Notebookpaper{
+            background-image: url("https://www.wpclipart.com/education/supplies/paper/notepad_page.png");
+            background-repeat: no-repeat;
+            border-radius: 10px;
+            background-size:100%;
+            padding-left: 115px;
+            padding-top: 100px;
+            width: 600px;
+            display: inline-block;
+            /* height: 100%; */
+            font-family: 'Indie Flower', cursive;
+            font-family: 'Satisfy', cursive;
+            font-family: 'Homemade Apple', cursive;
+            margin-top: 100px;
+            vertical-align: top;
+            margin-left: 20px;
+            height: 760px;
+            text-align: left;
+            overflow: auto;
+        }
+
+        .LEFTside{
+            display: inline-block;
+            margin-top: 100px;
+            border: 5px solid black;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .form-group{
+            padding: 10px;
+
+        }
+        
+    </style>
+    <title>Edit Your Recipe:</title>
+</head>
+<body data-spy="scroll" data-target=".navbar" data-offset="50">
+    @* ******************This is the nav tabs on top of the page*************** *@
+    <nav class="navbar-inverse navbar-fixed-top">
+        <ul class="nav nav-tabs nav-left-justified">
+            <li id="home"><a data-toggle="tab" href="/main">Home</a></li>
+            <li id="add"  class="active"><a data-toggle="tab" href="/newrecipe">Add New Recipe</a></li>
+            <li id="saved"><a data-toggle="tab" href="/savedRecipes">Saved Recipes</a></li>
+            <li id="edit"><a data-toggle="tab" href="/editUser/@Model.RegisterUser.UserId">Edit Profile</a></li>
+            <li id="logout"><a data-toggle="tab" href="/logout">Log Out</a></li>
+        </ul>
+    </nav> 
+
+    <div class="containerCenter">
+
+        <div class="LEFTside">
+            
+            <h1>@Model.RegisterUser.FirstName, Edit Your Recipe:</h1>
+
+            <h1 class="RecipeTitle">@Model.Recipe.RecipeName</h1>
+
+            <img class="RecipePicture" src="@Model.Recipe.RecipeImage">
+    
+            <h3>Time needed for Recipe: @Model.Recipe.RecipeDuration minutes</h3>
+
+            <h3>Number of Ingredients: @Model.Recipe.IngredientList.Count()</h3>
+
+            <h3>Add an Ingredient:</h3>
+            <form asp-controller="Home" asp-action="AddIngredient" method="POST">
+                <input type="hidden" asp-for="@Model.Ingredient.RecipeId" value="@Model.Recipe.RecipeId"/>
+                <div class="form-group row">
+                    <span asp-validation-for="@Model.Ingredient.IngredientName"></span>
+                    <label asp-for="@Model.Ingredient.IngredientName"></label>
+                    <input asp-for="@Model.Ingredient.IngredientName"/>
+                </div>
+                <div class="form-group row">
+                    <span asp-validation-for="@Model.Ingredient.Quantity"></span>
+                    <label asp-for="@Model.Ingredient.Quantity"></label>
+                    <input asp-for="@Model.Ingredient.Quantity"/>
+
+                    <label asp-for="@Model.Ingredient.Metric"></label>
+                    <select asp-for="@Model.Ingredient.Metric">
+                        <option>Teasepoon</option>
+                        <option>Tablespoon</option>
+                        <option>Cup</option>
+                        <option>Pint</option>
+                        <option>Quart</option>
+                        <option>Gallon</option>
+                    </select>
+                </div>
+                <div class="form-group row">
+                    <input class="btn btn-primary" type="submit" value="Add an Ingredient to your Recipe!"/>
+                </div>
+            </form>
+            <h3>Add a Step:</h3>
+            <form asp-controller="Home" asp-action="AddStep" method="POST">
+                <div class="form-group row">
+                    <input type="hidden" asp-for="@Model.Step.RecipeId" value="@Model.Recipe.RecipeId"/>
+                    <span asp-validation-for="@Model.Step.Text"></span>
+                    <textarea asp-for="@Model.Step.Text" placeholder = "Enter your step instructions here"></textarea>
+                    <br>
+                    <input class="btn btn-primary" type="submit" value="Add a Step to Your Recipe!"/>
+                </div>        
+            </form>
+        </div>
+
+        <div class="Notebookpaper">
+            <div>
+                <h4>Ingredients:</h4>
+                    <ul>
+                    @foreach(var ingredient in Model.Recipe.IngredientList)
+                    {
+                        <li>@ingredient.IngredientName: @{
+                            var amount = ingredient.Quantity.ToString ("##0.00");
+                            @Html.DisplayTextFor(model =>amount);
+                        } - @ingredient.Metric
+                        </li>
+                    }
+                    </ul>
+            </div>
+            <div>
+                <h4>List of Instructions:</h4>
+                    <ol>
+                    @foreach(var step in Model.Recipe.StepList)
+                    {
+                        <li>@step.Text</li>
+                    }
+                    </ol>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
