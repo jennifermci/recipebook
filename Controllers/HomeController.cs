@@ -148,10 +148,26 @@ namespace RecipeBook.Controllers
             {
                 dbContext.Add(fromForm.Recipe);
                 dbContext.SaveChanges();
-                Recipe Recipe = dbContext.Recipes
+                // Recipe Recipe = dbContext.Recipes
+
+                //     .Include(r => r.IngredientList)
+                //     .Include(r => r.StepList)
+                //     .Last();
+
+                //TODO: make .Last() work in previous version *****************************************
+
+                List<Recipe> RecipeList = dbContext.Recipes
                     .Include(r => r.IngredientList)
-                    .Include(r => r.StepList)
-                    .Last();
+                    .Include(r => r.StepList) 
+                    .ToList();
+                Recipe Recipe = null;
+                foreach(var r in RecipeList){
+                    if( r.RecipeId == fromForm.Recipe.RecipeId){
+                        Recipe = r;
+
+                    }   
+                };
+
                 EditWrapper EditWrapper = new EditWrapper();
                 EditWrapper.RegisterUser = fromLogin;
                 EditWrapper.Recipe = Recipe;
